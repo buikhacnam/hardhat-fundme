@@ -13,21 +13,24 @@ contract FundMe {
 
     address public immutable i_owner;
     uint256 public constant MINIMUM_USD = 50 * 10 ** 18;
+
+    AggregatorV3Interface public immutable i_priceFeed;
     
-    constructor() {
+    constructor(address priceFeedAddress) {
         i_owner = msg.sender;
+        i_priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     function fund() public payable {
         // require(msg.value.getConversionRate() >= MINIMUM_USD, "You need to spend more ETH!");
-        require(PriceConverter.getConversionRate(msg.value) >= MINIMUM_USD, "You need to spend more ETH!");
+        require(PriceConverter.getConversionRate(msg.value, i_priceFeed) >= MINIMUM_USD, "You need to spend more ETH!");
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
     }
     
     function getVersion() public view returns (uint256){
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
-        return priceFeed.version();
+        // AggregatorV3Interface priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
+        return AggregatorV3Interface(i_priceFeed).version();
     }
     
     modifier onlyOwner {
