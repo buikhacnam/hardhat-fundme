@@ -28,6 +28,106 @@ You may want to install @chainlink/contracts :
 yarn add -D @chainlink/contracts
 ```
 
+# Hardhat Deploy Plugin
+Source: https://github.com/wighawag/hardhat-deploy
+
+```
+yarn add -D hardhat-deploy @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers ethers
+```
+
+Then you can create a folder named deploy on the root folder of your project.
+
+Run the deploy command below to automaically compile all the contracts and run all the deploy functions in all files in the deploy folder.
+
+To deploy, run:
+
+```
+yarn hardhat deploy
+```
+
+```
+yarn hardhat deploy --network <networkName> 
+```
+
+```
+yarn hardhat deploy --tags <tagName>
+```
+
+# Mock Contracts
+
+Problem: You want to use a <a href='https://docs.chain.link/docs/ethereum-addresses/'>Data Feed address</a> from a network to do some stuff on your contract, for example convert ETH to USD. But you only want to deploy the contract to hardhat / localhost network, but not the real network that Data Feed address belongs to. So where do you get the Data Feed address from?
+
+The anwer is to create a mock contract. Then deploy it to hardhat / localhost network, and then you can use the Data Feed address from the mock contract.
+
+In this project we will use a mock <a href='https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.6/tests/MockV3Aggregator.sol'>contract</a> from chainlink: 
+
+```
+pragma solidity ^0.6.0;
+
+import "@chainlink/contracts/src/v0.6/tests/MockV3Aggregator.sol";
+
+```
+
+Then we deploy the mock contract to hardhat / localhost network.  In the deploy folder, we have a file named `00-deploy-mocks.ts`:
+
+```
+const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+	console.log('Deploying mocks...')
+    // @ts-ignore
+    const { getNamedAccounts, deployments } = hre
+    const { deploy, log } = deployments
+    const { deployer } = await getNamedAccounts()
+
+    if(developmentChains.includes(network.name)) {
+        log('Deploying mocks nha...')
+        await deploy('MockV3Aggregator', {
+            contract: 'MockV3Aggregator',
+            from: deployer,
+            args: [DECIMALS, INITIAL_ANSWER],
+            log: true,
+        })
+        log('Mocks deployed!')
+    }
+}
+
+export default deploy
+deploy.tags = ["all", "mocks"]
+```
+
+Then we can use the contract address from the mock contract and use it as the Data Feed address.
+
+```
+const deploy:DeployFunction = async (hre:HardhatRuntimeEnvironment) => {
+	console.log('Deploying fundme...')
+    // hre can be a lot like: import hre from 'hardhat'
+    // @ts-ignore
+	const { getNamedAccounts, deployments } = hre
+    const { deploy, log } = deployments
+    const { deployer } = await getNamedAccounts()
+    const chainId:number = network.config.chainId!
+    let ethUsdPriceFeedAddress = ''
+    if(developmentChains.includes(network.name)) {
+        //get recent MockV3Aggregator deployed contract address
+        const mockContract = await deployments.get('MockV3Aggregator')
+        ethUsdPriceFeedAddress = mockContract.address
+
+    } else {
+        ethUsdPriceFeedAddress = networkConfig[chainId].ethUsdPriceFeed
+    }
+
+    const fundMe = await deploy('FundMe', {
+        from: deployer,
+        args: [ethUsdPriceFeedAddress],
+        log: true,
+    })
+
+    log('FundMe deployed!')
+}
+
+export default deploy
+deploy.tags = ["all", "fundme"]
+```
+
 # Advanced Sample Hardhat Project
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
