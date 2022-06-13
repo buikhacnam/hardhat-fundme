@@ -2,6 +2,7 @@ import { network } from 'hardhat'
 import { DeployFunction, Deployment } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import {developmentChains, networkConfig} from '../helper-hardhat-config'
+import { verify } from '../utils/verify'
 
 const deploy:DeployFunction = async (hre:HardhatRuntimeEnvironment) => {
 	console.log('Deploying fundme...')
@@ -29,7 +30,15 @@ const deploy:DeployFunction = async (hre:HardhatRuntimeEnvironment) => {
         from: deployer,
         args: [ethUsdPriceFeedAddress],
         log: true,
+        waitConfirmations: 6
     })
+
+    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+        console.log('start verify contract...')
+        await verify(fundMe.address, [ethUsdPriceFeedAddress])
+        //https://rinkeby.etherscan.io/address/0xe683379097D9BD1502e8a1Cef055C22372488E33#code
+    }
+
 
     log('FundMe deployed!')
     console.log('fundme address: ', fundMe.address)

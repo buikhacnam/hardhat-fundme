@@ -1,3 +1,6 @@
+# Hardhat FundMe Contract
+
+
 # Create Hardhat Typescript project
 
 Install hardhat:
@@ -51,6 +54,10 @@ yarn hardhat deploy --network <networkName>
 
 ```
 yarn hardhat deploy --tags <tagName>
+```
+
+```
+yarn hardhat deploy --network <networkName> --tags <tagName>
 ```
 
 # Mock Contracts

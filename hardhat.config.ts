@@ -30,12 +30,13 @@ const config: HardhatUserConfig = {
 		compilers: [{ version: '0.8.8' }, { version: '0.6.6' }],
 	},
 	networks: {
-		ropsten: {
-			url: process.env.ROPSTEN_URL || '',
+		rinkeby: {
+			url: process.env.RINKEBY_RPC_URL || '',
 			accounts:
-				process.env.PRIVATE_KEY !== undefined
-					? [process.env.PRIVATE_KEY]
+				process.env.METAMASK_RINKEBY_PRIVATE_KEY !== undefined
+					? [process.env.METAMASK_RINKEBY_PRIVATE_KEY]
 					: [],
+			chainId: 4,
 		},
 		localhost: {
 			url: 'http://127.0.0.1:8545',
@@ -44,8 +45,12 @@ const config: HardhatUserConfig = {
 		}
 	},
 	gasReporter: {
-		enabled: process.env.REPORT_GAS !== undefined,
+		enabled: false,
 		currency: 'USD',
+		outputFile: 'gas-reporter.json',
+		noColors: true,
+		coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+		token: "MATIC"
 	},
 	etherscan: {
 		apiKey: process.env.ETHERSCAN_API_KEY,
