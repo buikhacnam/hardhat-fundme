@@ -57,7 +57,7 @@ yarn hardhat deploy --tags <tagName>
 
 Problem: You want to use a <a href='https://docs.chain.link/docs/ethereum-addresses/'>Data Feed address</a> from a network to do some stuff on your contract, for example convert ETH to USD. But you only want to deploy the contract to hardhat / localhost network, but not the real network that Data Feed address belongs to. So where do you get the Data Feed address from?
 
-The anwer is to create a mock contract. Then deploy it to hardhat / localhost network, and then you can use the Data Feed address from the mock contract.
+The anwer is to create a mock contract. Then deploy it to hardhat / localhost network, and then you can use the mock contract address as Data Feed address.
 
 In this project we will use a mock <a href='https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.6/tests/MockV3Aggregator.sol'>contract</a> from chainlink: 
 

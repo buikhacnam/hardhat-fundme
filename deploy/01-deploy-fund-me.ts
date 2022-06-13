@@ -32,8 +32,8 @@ const deploy:DeployFunction = async (hre:HardhatRuntimeEnvironment) => {
     })
 
     log('FundMe deployed!')
-    log('--------------------------------------------------')
     console.log('fundme address: ', fundMe.address)
+    log('--------------------------------------------------')
 }
 
 export default deploy

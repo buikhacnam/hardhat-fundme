@@ -12,13 +12,14 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     if(developmentChains.includes(network.name)) {
         log('Deploying mocks nha...')
         console.log('mock deployer:', deployer)
-        await deploy('MockV3Aggregator', {
+        const mock = await deploy('MockV3Aggregator', {
             contract: 'MockV3Aggregator',
             from: deployer,
             args: [DECIMALS, INITIAL_ANSWER],
             log: true,
         })
         log('Mocks deployed!')
+        console.log('mock address: ', mock.address)
         log('--------------------------------------------------')
     }
 }
