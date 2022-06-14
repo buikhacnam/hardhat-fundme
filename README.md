@@ -135,6 +135,9 @@ export default deploy
 deploy.tags = ["all", "fundme"]
 ```
 
+# Solidity Style Guide
+Reference: https://docs.soliditylang.org/en/v0.8.13/style-guide.html
+
 # Advanced Sample Hardhat Project
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
