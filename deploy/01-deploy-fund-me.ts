@@ -1,5 +1,5 @@
 import { network } from 'hardhat'
-import { DeployFunction, Deployment } from "hardhat-deploy/types"
+import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import {developmentChains, networkConfig} from '../helper-hardhat-config'
 import { verify } from '../utils/verify'
@@ -30,7 +30,7 @@ const deploy:DeployFunction = async (hre:HardhatRuntimeEnvironment) => {
         from: deployer,
         args: [ethUsdPriceFeedAddress],
         log: true,
-        waitConfirmations: 6
+        waitConfirmations: developmentChains.includes(network.name) ? 0 : 1
     })
 
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
