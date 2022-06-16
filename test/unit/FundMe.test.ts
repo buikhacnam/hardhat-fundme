@@ -41,7 +41,7 @@ describe("FundMe", () => {
 
     describe("constructor", async() => {
         it("set the aggregator address correctly", async() => {
-            const responsePriceFeed = await fundMe.i_priceFeed()
+            const responsePriceFeed = await fundMe.s_priceFeed()
             assert.equal(responsePriceFeed, mockV3Aggregator.address)
         })
     })
@@ -52,12 +52,12 @@ describe("FundMe", () => {
         })
         it('update the amount funded data structure', async () => {
             await fundMe.fund({value: oneEther}) //call function fund and send 1 ether to fundme contract??
-            const response = await fundMe.addressToAmountFunded(deployer)
+            const response = await fundMe.s_addressToAmountFunded(deployer)
             assert.equal(response.toString(), oneEther.toString())
         })
-        it('add funder to array of funders', async () => {
+        it('add funder to array of s_funders', async () => {
             await fundMe.fund({value: oneEther})
-            const response = await fundMe.funders(0)
+            const response = await fundMe.s_funders(0)
             assert.equal(response, deployer)
         })
     })
@@ -74,7 +74,7 @@ describe("FundMe", () => {
             const startingDeployerBalance = await fundMe.provider.getBalance(deployer)
             console.log('startingDeployerBalance: ', startingDeployerBalance.toString())
 
-            const transactionResponse = await fundMe.withdraw()
+            const transactionResponse = await fundMe.cheaperWithdraw()
             const transactionReceipt = await transactionResponse.wait(1)
             const { gasUsed, effectiveGasPrice } = transactionReceipt
             const gasCost = gasUsed.mul(effectiveGasPrice)
@@ -90,7 +90,7 @@ describe("FundMe", () => {
             assert.equal(startingFundMeBalance.add(startingDeployerBalance).toString(), endingDeployerBalance.add(gasCost).toString())
         })
 
-        it(" allow us to withdrasw with multiple funders", async () => {
+        it(" allow us to withdrasw with multiple s_funders", async () => {
             const accounts = await ethers.getSigners()
             for (let i = 1; i < 4; i++) {
                 //connect to fundme from each account (3 accounts)
@@ -104,22 +104,22 @@ describe("FundMe", () => {
             console.log('startingDeployerBalance: ', startingDeployerBalance.toString())
             console.log("BEFORE DOING THE WITHDRAWAL")
             for (let i = 0; i < 4; i++) {
-                const response = await fundMe.addressToAmountFunded(accounts[i].address)
+                const response = await fundMe.s_addressToAmountFunded(accounts[i].address)
                 console.log(i, ' ', accounts[i].address, ' response: ', response.toString())
             }
 
-            const transactionResponse = await fundMe.withdraw()
+            const transactionResponse = await fundMe.cheaperWithdraw()
             const transactionReceipt = await transactionResponse.wait(1)
             const { gasUsed, effectiveGasPrice } = transactionReceipt
             const gasCost = gasUsed.mul(effectiveGasPrice)
             console.log('gasCost: ', gasCost.toString())
 
 
-            //make sure funders array is empty
-            await expect(fundMe.funders(0)).to.be.reverted
-            // make sure each value in the addressToAmountFunded map is 0 
+            //make sure s_funders array is empty
+            await expect(fundMe.s_funders(0)).to.be.reverted
+            // make sure each value in the s_addressToAmountFunded map is 0 
             for (let i = 0; i < 4; i++) {
-                const response = await fundMe.addressToAmountFunded(accounts[i].address)
+                const response = await fundMe.s_addressToAmountFunded(accounts[i].address)
                 console.log(i, ' response: ', response.toString())
                 assert.equal(response.toString(), '0')
             }
@@ -129,7 +129,7 @@ describe("FundMe", () => {
             const accounts = await ethers.getSigners()
             const attacker = accounts[4]
             const attackerConnectedContract = await fundMe.connect(attacker)
-            await expect(attackerConnectedContract.withdraw()).to.be.revertedWith("FundMe__NotOwner")
+            await expect(attackerConnectedContract.cheaperWithdraw()).to.be.revertedWith("FundMe__NotOwner")
         })
     })
 })
