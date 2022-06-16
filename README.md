@@ -138,6 +138,40 @@ deploy.tags = ["all", "fundme"]
 # Solidity Style Guide
 Reference: https://docs.soliditylang.org/en/v0.8.13/style-guide.html
 
+# Testing
+
+## Unit Test
+    
+On the file test/unit/FundMe.test.ts, we can write unit test for the fundme contract deployed on local network.
+
+Run test:
+
+```
+yarn hardhat test
+```
+
+## Staging Test
+
+On the file test/staging/FundMe.test.ts, we can write unit test for the fundme contract deployed on Test network like Rinkeby.
+
+Run test:
+```
+yarn hardhat test --network rinkeby
+```
+
+Dont forget to deploy the fundme contract on the test network first.
+
+```
+yarn hardhat deploy --network rinkeby
+```
+
+# Script
+
+We can run some scripts in the `scripts` folder:
+
+```
+yarn hardhat run scripts/fund.ts
+```
 # Advanced Sample Hardhat Project
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
