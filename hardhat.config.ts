@@ -45,12 +45,12 @@ const config: HardhatUserConfig = {
 		}
 	},
 	gasReporter: {
-		enabled: true,
+		// enabled: true,
 		currency: 'USD',
 		outputFile: 'gas-reporter.json',
 		noColors: true,
 		// coinmarketcap: process.env.COINMARKETCAP_API_KEY,
-		token: "MATIC"
+		// token: "MATIC"
 	},
 	etherscan: {
 		apiKey: process.env.ETHERSCAN_API_KEY,

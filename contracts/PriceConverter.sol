@@ -31,6 +31,7 @@ library PriceConverter {
             uint256 ethAmountInUsd = (ethPrice * ethAmount) /
                 1000000000000000000;
             // the actual ETH/USD conversion rate, after adjusting the extra 0s.
+            console.log('ethAmountInUsd: ',ethAmountInUsd);
             return ethAmountInUsd;
         }
     }

@@ -1,10 +1,10 @@
 import { network, deployments, ethers, getNamedAccounts} from 'hardhat'
-import { DeployFunction } from "hardhat-deploy/types"
-import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { assert, expect } from 'chai'
 import { FundMe, MockV3Aggregator } from "../../typechain"
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
+import  {developmentChains} from '../../helper-hardhat-config'
 
+
+!developmentChains.includes(network.name) ? describe.skip :
 describe("FundMe", () => {
     let fundMe:FundMe
     let deployer: any
@@ -46,7 +46,7 @@ describe("FundMe", () => {
         })
     })
 
-    describe("fund", async () => {
+    describe("fundme local test", async () => {
         it("fails if you dont have enough ether", async () => {
             await expect(fundMe.fund()).to.be.revertedWith("You need to spend more ETH!")
         })
