@@ -1,5 +1,6 @@
 # Hardhat FundMe Contract
 
+<img src='https://hardhat.org/hardhat-tutorial.svg' />
 
 # Create Hardhat Typescript project
 
