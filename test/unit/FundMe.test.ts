@@ -89,5 +89,47 @@ describe("FundMe", () => {
             assert.equal(endingFundMeBalance.toString(), "0")
             assert.equal(startingFundMeBalance.add(startingDeployerBalance).toString(), endingDeployerBalance.add(gasCost).toString())
         })
+
+        it(" allow us to withdrasw with multiple funders", async () => {
+            const accounts = await ethers.getSigners()
+            for (let i = 1; i < 4; i++) {
+                //connect to fundme from each account (3 accounts)
+                console.log('account ', i, ': ',  accounts[i])
+                const fundMeConnectedContract = fundMe.connect(accounts[i])
+                await fundMeConnectedContract.fund({value: oneEther})
+            }
+            const startingFundMeBalance = await fundMe.provider.getBalance(fundMe.address) // you can also use ethers.provider.getBalance(fundMe.address)
+            console.log('startingFundMeBalance: ', startingFundMeBalance.toString())
+            const startingDeployerBalance = await fundMe.provider.getBalance(deployer)
+            console.log('startingDeployerBalance: ', startingDeployerBalance.toString())
+            console.log("BEFORE DOING THE WITHDRAWAL")
+            for (let i = 0; i < 4; i++) {
+                const response = await fundMe.addressToAmountFunded(accounts[i].address)
+                console.log(i, ' ', accounts[i].address, ' response: ', response.toString())
+            }
+
+            const transactionResponse = await fundMe.withdraw()
+            const transactionReceipt = await transactionResponse.wait(1)
+            const { gasUsed, effectiveGasPrice } = transactionReceipt
+            const gasCost = gasUsed.mul(effectiveGasPrice)
+            console.log('gasCost: ', gasCost.toString())
+
+
+            //make sure funders array is empty
+            await expect(fundMe.funders(0)).to.be.reverted
+            // make sure each value in the addressToAmountFunded map is 0 
+            for (let i = 0; i < 4; i++) {
+                const response = await fundMe.addressToAmountFunded(accounts[i].address)
+                console.log(i, ' response: ', response.toString())
+                assert.equal(response.toString(), '0')
+            }
+        })
+
+        it('only allows the owner to withdraw', async () => {
+            const accounts = await ethers.getSigners()
+            const attacker = accounts[4]
+            const attackerConnectedContract = await fundMe.connect(attacker)
+            await expect(attackerConnectedContract.withdraw()).to.be.revertedWith("FundMe__NotOwner")
+        })
     })
 })
