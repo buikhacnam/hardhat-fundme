@@ -78,7 +78,7 @@ contract FundMe {
         }
         s_funders = new address[](0);
 
-        (bool callSuccess, ) = payable(msg.sender).call{
+        (bool callSuccess, ) = msg.sender.call{
             value: address(this).balance
         }("");
         require(callSuccess, "Call failed");
